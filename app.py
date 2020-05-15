@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify
 from modules.dataprocessing import read
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -27,9 +28,17 @@ def get_barchart_data(argument):
     data = []
     return jsonify(data)
 
-@app.route("/get_stackchart_data/<argument>")
-def get_linechart_data(argument):
+@app.route("/get_stackchart_data/<Licensetype>")
+def get_stackchart_data(Licensetype):
     data = []
+    daterange = pd.date_range(start='2010-01', end='2020-05', freq='M')
+    industry = processed_data.loc[processed_data['License Type'] == Licensetype, 'Industry'].unique().values
+    for date in daterange:
+        temp = {}
+        temp['Date'] = str(date.year) + '-' + str(date.month)
+        for type in industry:
+            temp[type] = len(processed_data.loc[(processed_data['Industry'] == type) & (processed_data['License Expiration Date'] > date) & (processed_data['License Creation Date'] < date)].index)
+        data.append(temp)
     return jsonify(data)
 
 if __name__ == "__main__":

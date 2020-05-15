@@ -15,9 +15,10 @@ def read(url):
     df = pd.read_csv(url)
     # Drop unused collums
     df = df.drop(columns = ['Business Name 2', 'Address Building', 'Address Street Name', 
-                            'Secondary Address Street Name', 'Contact Phone Number', 'Address Borough', 'Borough Code',
+                            'Secondary Address Street Name', 'Contact Phone Number', 'Borough Code',
                             'Community Board', 'Council District', 'BIN', 'BBL', 'NTA', 'Census Tract',
-                            'Detail', 'Longitude', 'Latitude', 'Location'])
+                            'Detail', 'Longitude', 'Latitude', 'Location', 'Address City'])
+
     # Industry type merge dictionary
     industry_type = {'Amusement': ['Amusement Arcade', 'Amusement Device Permanent', 'Amusement Device Portable', 'Amusement Device Temporary'],
                      'Garage and Parking Lot': ['Garage and Parking Lot', 'Garage', 'Parking Lot'],
@@ -43,7 +44,18 @@ def read(url):
 
     # Sample
     df = stratifiedSample(df)
+
+    # Set borough code for individual
+    df.loc[df['License Type'] == 'Individual', 'Address Borough'] = 'null'
+
+    # Drop missing values
     df = df.dropna(axis='index', how='any')
+
+    # Rename column names
+
+    # Convert to datetime
+    df['License Expiration Date'] = pd.to_datetime(df['License Expiration Date'], format='%m/%d/%Y', errors='coerce')
+    df['License Creation Date'] = pd.to_datetime(df['License Creation Date'], format='%m/%d/%Y', errors='coerce')
     return df.reset_index(drop=True)
 
 if __name__ == '__main__':
