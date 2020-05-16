@@ -88,7 +88,8 @@ function update_map(cat){
         .shapePadding(2)
         .shapeWidth(10)
         .shapeHeight(10)
-        .labelOffset(2);
+        .labelOffset(2)
+        .labelDelimiter("~");
 
 
       svg.append("g")
