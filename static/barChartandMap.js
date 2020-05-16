@@ -14,8 +14,8 @@ function update_map(cat){
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    $.post("get_map_data", {"argument": cat}, function(data_infunc){
-
+    var url = "get_map_data/" + cat;
+    d3.json(url, function(data_infunc) {
       map_data = JSON.parse(data_infunc)
 
       d3.json("https://raw.githubusercontent.com/YanMa1/CSE564_Final_Project/master/nycbyzipcode.json", function(error, nyc) {
@@ -102,7 +102,7 @@ function update_bar_chart(){
   var xAxis = d3.axisBottom(x);
   var yAxis = d3.axisLeft(y);
 
-  $.post("get_barchart_data", {'data': 'received'}, function(data_infunc){
+  d3.json("get_barchart_data", function(data_infunc) {
       data = JSON.parse(data_infunc)
       if (selected == 0){
         data = data.sort((a, b) => (a.industry > b.industry) ? 1 : -1)

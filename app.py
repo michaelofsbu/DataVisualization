@@ -15,13 +15,12 @@ def index():
 
     return render_template("index.html")
 
-@app.route("/get_map_data", methods = ["POST", "GET"])
-def get_map_data():
-    print(request.form["argument"])
-    data = json.dumps(bfuncs.get_map_info(processed_data, request.form["argument"]).to_dict(orient='records'))
+@app.route("/get_map_data/<cat>")
+def get_map_data(cat):
+    data = json.dumps(bfuncs.get_map_info(processed_data, cat).to_dict(orient='records'))
     return jsonify(data)
 
-@app.route("/get_barchart_data", methods = ["POST", "GET"])
+@app.route("/get_barchart_data")
 def get_barchart():
     data = json.dumps(bfuncs.count_frequency(processed_data).to_dict(orient='records'))
     return jsonify(data)
