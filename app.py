@@ -30,12 +30,14 @@ def get_barchart():
 def get_stackchart_data(Licensetype):
     data = []
     daterange = pd.date_range(start='2010-01', end='2020-05', freq='M')
-    industry = processed_data.loc[processed_data['License Type'] == Licensetype, 'Industry'].unique()
+    processed_data['License_Expiration_Date'] = pd.to_datetime(processed_data['License_Expiration_Date'], format='%m/%d/%Y', errors='coerce')
+    processed_data['License_Creation_Date'] = pd.to_datetime(processed_data['License_Creation_Date'], format='%m/%d/%Y', errors='coerce')
+    industry = processed_data.loc[processed_data['License_Type'] == Licensetype, 'Industry'].unique()
     for date in daterange:
         temp = {}
         temp['Date'] = str(date.year) + '-' + str(date.month) + '-' + str(date.day)
         for type in industry:
-            temp[type] = len(processed_data.loc[(processed_data['Industry'] == type) & (processed_data['License Expiration Date'] > date) & (processed_data['License Creation Date'] < date)].index)
+            temp[type] = len(processed_data.loc[(processed_data['Industry'] == type) & (processed_data['License_Expiration_Date'] > date) & (processed_data['License_Creation_Date'] < date)].index)
         data.append(temp)
     return jsonify(data)
 

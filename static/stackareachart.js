@@ -52,7 +52,7 @@ function create_stack_chart(){
 
         d3.json(dataurl, function(data){
         var group = Object.keys(data[0]).filter((item)=> item!=='Date');
-
+        console.log(data);
         var series = d3.stack()
                         .keys(group)(data);
         //console.log(series);
