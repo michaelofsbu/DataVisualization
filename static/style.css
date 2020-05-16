@@ -32,3 +32,25 @@ path {
   pointer-events: none;
   opacity: 0;
 }
+
+#dropdownBT{
+  background-color: #56B794;
+  color: white;
+  padding: 8px;
+  font-size: 18px;
+  font-family: Arial;
+  border: none;
+  position: absolute;
+  top: 120px;
+  left: 60px;
+}
+
+.dropdown{
+  background-color: #f1f1f1;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  color: black;
+  font-size: 16px;
+}

@@ -1,4 +1,4 @@
-create_bar_chart();
+update_bar_chart();
 update_map("all");
 
 function update_map(cat){
@@ -76,7 +76,12 @@ function update_map(cat){
   });
 }
 
-function create_bar_chart(){
+function update_bar_chart(){
+  var contents = document.getElementById("dropdownBT");
+  var index = contents.selectedIndex;
+  var selected = contents.options[index].value;
+
+  d3.select("#barChart").select("svg").remove();
   // set the dimensions and margins of the graph
   var margin = {top: 80, right: 50, bottom: 80, left: 50},
       width = 800 - margin.left - margin.right,
@@ -99,7 +104,13 @@ function create_bar_chart(){
 
   $.post("get_barchart_data", {'data': 'received'}, function(data_infunc){
       data = JSON.parse(data_infunc)
-
+      if (selected == 0){
+        data = data.sort((a, b) => (a.industry > b.industry) ? 1 : -1)
+      }else if(selected == 1){
+        data = data.sort((a, b) => (a.count < b.count) ? 1 : -1)
+      }else{
+        data = data.sort((a, b) => (a.count > b.count) ? 1 : -1)
+      }
       // Scale the range of the data
       var x_values = data.map(function(d) {return d.industry;});
 
