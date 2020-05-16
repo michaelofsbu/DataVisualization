@@ -26,11 +26,11 @@ def get_map_info(df, argument):
 
     for z in zips:
         frequencies.loc[frequencies['zip'] == z, 'count'] = len(businesses_by_zip[businesses_by_zip['Address_ZIP'] == z])
-
-    max = frequencies['count'].max()
-    divide = max/5
-    frequencies['count'] = frequencies['count'] // divide
+    sum = frequencies['count'].sum()
+    #max = frequencies['count'].max()
+    #divide = max/5
+    frequencies['count'] = frequencies['count'] * 100 / sum
     return frequencies
 
 # df = pd.read_csv("../processed_data.csv")
-# print(get_map_info(df, 'Electronics Store'))
+# print(get_map_info(df, 'Electronics Store')['count'].sum())

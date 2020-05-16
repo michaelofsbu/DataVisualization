@@ -14,62 +14,91 @@ function update_map(cat){
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    var url = "get_map_data/" + cat;
-    d3.json(url, function(data_infunc) {
-      map_data = JSON.parse(data_infunc)
+  var max = 0;
 
-      d3.json("https://raw.githubusercontent.com/YanMa1/CSE564_Final_Project/master/nycbyzipcode.json", function(error, nyc) {
-        if (error) throw error;
+  var url = "get_map_data/" + cat;
+  d3.json(url, function(data_infunc) {
+    map_data = JSON.parse(data_infunc)
 
-        var path = d3.geoPath()
-          .projection(d3.geoConicConformal()
-          .parallels([33, 45])
-          .rotate([96, -39])
-          .fitSize([width, height], nyc));
+    d3.json("https://raw.githubusercontent.com/YanMa1/CSE564_Final_Project/master/nycbyzipcode.json", function(error, nyc) {
+      if (error) throw error;
 
-        svg.selectAll("path")
-          .data(nyc.features)
-          .enter().append("path")
-          .attr("d", path)
-          .style("fill", function(d) {
-            var count = 0;
-            for (i in map_data){
-              if (map_data[i].zip == d.properties.postalCode){
-                count = map_data[i].count;
-              }
+      var path = d3.geoPath()
+        .projection(d3.geoConicConformal()
+        .parallels([33, 45])
+        .rotate([96, -39])
+        .fitSize([width, height], nyc));
+
+      svg.selectAll("path")
+        .data(nyc.features)
+        .enter().append("path")
+        .attr("d", path)
+        .style("fill", function(d) {
+          var count = 0;
+          for (i in map_data){
+            if (map_data[i].zip == d.properties.postalCode){
+              count = map_data[i].count;
             }
-            return d3.interpolateYlGn(count * 0.2);
-          })
-          .on("mouseenter", function(d) {
-            console.log(d);
+          }
+          return d3.interpolateYlGn(count * 0.2);
+        })
+        .on("mouseenter", function(d) {
+          console.log(d);
 
-            d3.select(this)
-              .style("stroke-width", 1.5)
-              .style("fill", "#afafaf")
-              .style("stroke-dasharray", 0);
+          d3.select(this)
+            .style("stroke-width", 1.5)
+            .style("fill", "#afafaf")
+            .style("stroke-dasharray", 0);
 
-            d3.select("#zipcodePopover")
-              .transition()
-              .style("opacity", 1)
-              .style("left", (d3.event.pageX) + "px")
-              .style("top", (d3.event.pageY) + "px")
-              .text(d.properties.PO_NAME);
-          })
-          .on("mouseleave", function(d) {
-            d3.select(this)
-              .style("stroke-width", .25)
-              .style("fill", function(d) {
-                var count = 0;
-                for (i in map_data){
-                  if (map_data[i].zip == d.properties.postalCode){
-                    count = map_data[i].count;
-                  }
+          d3.select("#zipcodePopover")
+            .transition()
+            .style("opacity", 1)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY) + "px")
+            .text(d.properties.PO_NAME);
+        })
+        .on("mouseleave", function(d) {
+          d3.select(this)
+            .style("stroke-width", .25)
+            .style("fill", function(d) {
+              var count = 0;
+              for (i in map_data){
+                if (map_data[i].zip == d.properties.postalCode){
+                  count = map_data[i].count;
                 }
-                return d3.interpolateYlGn(count * 0.2);
-              })
-              .style("stroke-dasharray", 1);
+              }
+              if (count * 0.2 > max){
+                max = count * 0.2;
+              }
+              return d3.interpolateYlGn(count * 0.2);
+            })
+            .style("stroke-dasharray", 1);
 
-          });
+        });
+
+      // Color legend.
+      range = [d3.interpolateYlGn(0), d3.interpolateYlGn(0.2), d3.interpolateYlGn(0.4), d3.interpolateYlGn(0.6), d3.interpolateYlGn(0.8), d3.interpolateYlGn(1)];
+      var colorScale = d3.scaleQuantile()
+        .domain([0, 1])
+        .range(range);
+
+      var colorLegend = d3.legendColor()
+        .labelFormat(d3.format(".0%"))
+        .scale(colorScale)
+        .shapePadding(2)
+        .shapeWidth(10)
+        .shapeHeight(10)
+        .labelOffset(2)
+        .labelDelimiter("~");
+
+
+      svg.append("g")
+        .attr("transform", "translate(200, 60)")
+        .call(colorLegend)
+        .selectAll("text")
+        .style("font-size", "10")
+        .style("font-family", "Arial");
+
 
     });
 
