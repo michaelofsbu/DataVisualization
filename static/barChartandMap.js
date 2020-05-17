@@ -2,15 +2,16 @@ update_bar_chart();
 update_map("all");
 
 function update_map(cat){
-  var margin = {top: 80, right: 50, bottom: 80, left: 50},
-      width = 960 - margin.left - margin.right,
-      height = 720 - margin.top - margin.bottom;
+  var margin = {top: 0, right: 100, bottom: 0, left: 50},
+      width = 400 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
 
   // append the svg object to the body of the page
-  var svg = d3.select("#map")
+  var Map = d3.select("#map")
       .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .attr('class', 'Map')
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -29,7 +30,7 @@ function update_map(cat){
         .rotate([96, -39])
         .fitSize([width, height], nyc));
 
-      svg.selectAll("path")
+        Map.selectAll("path")
         .data(nyc.features)
         .enter().append("path")
         .attr("d", path)
@@ -43,7 +44,7 @@ function update_map(cat){
           return d3.interpolateYlGn(count * 0.2);
         })
         .on("mouseenter", function(d) {
-          console.log(d);
+          //console.log(d);
 
           d3.select(this)
             .style("stroke-width", 1.5)
@@ -73,7 +74,9 @@ function update_map(cat){
               return d3.interpolateYlGn(count * 0.2);
             })
             .style("stroke-dasharray", 1);
-
+          d3.select('#zipcodePopover')
+            .style("opacity", 0)
+            .text(null);
         });
 
       // Color legend.
@@ -92,35 +95,31 @@ function update_map(cat){
         .labelDelimiter("~");
 
 
-      svg.append("g")
-        .attr("transform", "translate(200, 60)")
+        Map.append("g")
+        .attr("transform", "translate(250, 10)")
         .call(colorLegend)
         .selectAll("text")
-        .style("font-size", "10")
+        .style("font-size", "small")
         .style("font-family", "Arial");
-
-
     });
 
   });
 }
 
 function update_bar_chart(){
-  var contents = document.getElementById("dropdownBT");
-  var index = contents.selectedIndex;
-  var selected = contents.options[index].value;
-
-  d3.select("#barChart").select("svg").remove();
+  var selected = 1;
   // set the dimensions and margins of the graph
   var margin = {top: 80, right: 50, bottom: 80, left: 50},
       width = 800 - margin.left - margin.right,
       height = 300 - margin.top - margin.bottom;
 
   // append the svg object to the body of the page
-  var svg = d3.select("#barChart")
+  var barChart = d3.select("#barChart")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
+      //.attr("transform", "translate(" + 400 + "," + 0 + ")")
+      .attr('class', 'Barchart')
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -148,7 +147,7 @@ function update_bar_chart(){
 
 
       // Add the X Axis
-      svg.append("g")
+      barChart.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
@@ -162,7 +161,7 @@ function update_bar_chart(){
         .style("text-anchor", "start");
 
       // Add label to the X Axis
-      svg.append("text")
+      barChart.append("text")
         .attr("class", "x label")
         .attr("transform", "translate(" + (width/2) + "," + (height + margin.top - 5) + ")")
         .style("text-anchor", "middle")
@@ -171,12 +170,12 @@ function update_bar_chart(){
         .text("Industry");
 
       // Add the Y Axis
-      svg.append("g")
+      barChart.append("g")
         .attr("class", "y axis")
         .call(yAxis);
 
       // Add label to the Y Axis
-      svg.append("text")
+      barChart.append("text")
         .attr("class", "y label")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
@@ -187,27 +186,34 @@ function update_bar_chart(){
         .style("font-family", "Arial")
         .text("Frequency");
 
-      svg.selectAll(".bar")
+        barChart.selectAll(".bar")
         .data(data)
         .enter().append("rect")
         .attr("class", "bar")
         .on("mouseover", function(d) {
           d3.select(this)
-            .style("fill", "#afafaf");
+            .style("fill", "#afafaf")
+            .attr("height", function(d) { return height - y(d.count) + 5; })
+            .attr("width", x.bandwidth()+5)
+            .attr("x", function(d) { return x(d.industry)-2.5; })
+            .attr("y", function(d) { return y(d.count) - 5; });
         })
         .on("mouseout", function(d) {
           d3.select(this)
-            .style("fill", "#56B794");
+            .style("fill", "#56B794")
+            .attr("width", x.bandwidth())
+            .attr("height", function(d) { return height - y(d.count); })
+            .attr("x", function(d) { return x(d.industry); })
+            .attr("y", function(d) { return y(d.count); });
         })
         .on("click", function(d) {
           d3.select("#map").select("svg").remove();
           update_map(d.industry);
         })
         .attr("x", function(d) { return x(d.industry); })
-        .attr("y", function(d) { return x(d.count); })
+        .attr("y", function(d) { return y(d.count); })
         .attr("width", x.bandwidth())
         .transition()
-        .attr('transform', function(d) { return "translate(0," + y(d.count) + ")"; })
         .ease(d3.easeLinear)
         .attr("height", function(d) { return height - y(d.count); });
 

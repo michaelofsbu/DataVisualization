@@ -56,6 +56,20 @@ def read(url):
     # Convert to datetime
     df['License Expiration Date'] = pd.to_datetime(df['License Expiration Date'], format='%m/%d/%Y', errors='coerce')
     df['License Creation Date'] = pd.to_datetime(df['License Creation Date'], format='%m/%d/%Y', errors='coerce')
+
+    industry = df['Industry'].unique()
+    for type in industry:
+        if len(df.loc[df['Industry'] == type].index) < 3:
+            df.loc[df['Industry'] == type, 'Industry'] = None
+    df = df.dropna(axis='index', how='any')
+
+    # Column rename
+    name = {'DCA License Number': 'DCA_License_Number', 'License Type': 'License_Type', 
+            'License Expiration Date': 'License_Expiration_Date', 'License Status': 'License_Status',
+            'License Creation Date': 'License_Creation_Date', 'Business Name': 'Business_Name',
+            'Address State': 'Address_State', 'Address ZIP': 'Address_ZIP', 'Address Borough': 'Address_Borough'}
+    df = df.rename(columns = name)
+
     return df.reset_index(drop=True)
 
 if __name__ == '__main__':
