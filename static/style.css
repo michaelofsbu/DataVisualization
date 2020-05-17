@@ -65,12 +65,31 @@ header {
   }
 div#map{
     position: absolute;
-    top: 95.5;
-    left: 0;
+    top: 100px;
+    left: 0px;
 }
 
-div#barChart{
-    position: abolute;
-    top: 95.5;
-    left: 405.7;
+div#Chart{
+    position: absolute;
+    top: 200px;
+    left: 410px;
+}
+
+div#menu{
+    position: absolute;
+    top: 100px;
+    left: 400px;
+}
+
+circle.menu{
+    fill: white;
+    stroke: grey;
+    stroke-width: 2;
+}
+
+circle.menu_choosed{
+    fill: grey;
+    fill-opacity: 0.5;
+    stroke: grey;
+    stroke-width: 2;
 }

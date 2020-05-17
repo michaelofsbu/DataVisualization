@@ -1,5 +1,6 @@
 import pandas as pd 
 import json
+import pickle
 
 # Sample data randomly
 def randomSample(df, frac=0.01):
@@ -59,7 +60,10 @@ def read(url):
 
     industry = df['Industry'].unique()
     for type in industry:
-        if len(df.loc[df['Industry'] == type].index) < 3:
+        count = len(df.loc[df['Industry'] == type].index)
+        print(type)
+        print(count)
+        if count < 3:
             df.loc[df['Industry'] == type, 'Industry'] = None
     df = df.dropna(axis='index', how='any')
 
@@ -72,8 +76,27 @@ def read(url):
 
     return df.reset_index(drop=True)
 
+def get_industry(processed_data, Licensetype):
+    data = []
+    daterange = pd.date_range(start='2000-01', end='2020-05', freq='M')
+    processed_data['License_Expiration_Date'] = pd.to_datetime(processed_data['License_Expiration_Date'], format='%Y-%M-%d', errors='coerce')
+    processed_data['License_Creation_Date'] = pd.to_datetime(processed_data['License_Creation_Date'], format='%Y-%M-%d', errors='coerce')
+    industry = processed_data.loc[processed_data['License_Type'] == Licensetype, 'Industry'].unique()
+    for date in daterange:
+        temp = {}
+        temp['Date'] = str(date.year) + '-' + str(date.month) + '-' + str(date.day)
+        for type in industry:
+            temp[type] = len(processed_data.loc[(processed_data['Industry'] == type) & (processed_data['License_Expiration_Date'] > date) & (processed_data['License_Creation_Date'] < date)].index)
+        data.append(temp)
+    with open(Licensetype + ".txt", "wb") as fp: 
+        pickle.dump(data, fp)
+
 if __name__ == '__main__':
     url = 'https://raw.githubusercontent.com/michaelofsbu/cse564_finaldata/master/Legally_Operating_Businesses.csv'
     df = read(url)
     df.to_csv(r'./processed_data.csv', index=False)
+    df = pd.read_csv('processed_data.csv')
+    get_industry(df, 'Business')
+    get_industry(df, 'Individual')
+
     

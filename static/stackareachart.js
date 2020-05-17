@@ -1,16 +1,26 @@
-create_stack_chart();
+//create_stack_chart();
 function create_stack_chart(){
+    d3.select('svg.chart').remove();
     // set the dimensions and margins of the graph
-    var margin = {top: 80, right: 400, bottom: 50, left: 50},
-        width = 1264 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    var margin = {top: 80, right: 40, bottom: 200, left: 50},
+        width = 800 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
-    var svg = d3.select("#stackChart")
+    var svg = d3.select("#Chart")
                 .append("svg")
+                .attr("class", "chart")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
-
+    
+    // Make title
+    svg.append('text')
+    .attr("class", "title")
+    .attr("transform", "translate(" + (width+margin.left)/2 + "," + 40 + ")")
+    .style("text-anchor", "middle")
+    .style("font-size", "10")
+    .style("font-family", "Arial")
+    .text("Population of Active Indusries (01/2000 - 05/2020)");
     // create buttons for choosing license type
     var license_type = ["Business", "Individual"];
     var usr_choice;
@@ -39,15 +49,15 @@ function create_stack_chart(){
     plot('Business');
     function choose_license_type(d){
         usr_choice=d; 
-        d3.selectAll('circle').attr('class', 'button'); 
+        d3.select('svg.chart').selectAll('circle').attr('class', 'button'); 
         d3.select(this).attr('class', 'button_clicked');
         plot(usr_choice);
     }
 
     function plot(license_type){
-        d3.select('svg').selectAll('g').remove();
-        d3.select('svg').selectAll('.legend').remove();
-        d3.select('svg').selectAll('.legend_label').remove();
+        d3.select('svg.chart').selectAll('g').remove();
+        d3.select('svg.chart').selectAll('.legend').remove();
+        d3.select('svg.chart').selectAll('.legend_label').remove();
 
         var dataurl = '/get_stackchart_data/' + license_type;
 
@@ -65,7 +75,7 @@ function create_stack_chart(){
         var xaxis = svg.append("g")
                        .attr("transform", "translate(" + margin.left + "," + (height+margin.top) + ")")
                        .attr('class', 'axis')
-                       .call(d3.axisBottom(x).ticks(width / 80)
+                       .call(d3.axisBottom(x).ticks(width / 60)
                        .tickSizeOuter(0));
         var y = d3.scaleLinear()
                   .domain([0, d3.max(series, d => d3.max(d, d => d[1]))]).nice()
@@ -73,6 +83,9 @@ function create_stack_chart(){
         var yaxis = svg.append("g")
                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                        .attr('class', 'axis')
+                       .transition()
+                       .ease(d3.easeLinear)
+                       .duration(400)
                        .call(d3.axisLeft(y));
 
         // define color scheme
@@ -93,13 +106,13 @@ function create_stack_chart(){
                                .y1(function(d) { return y(d[1]); }));
         
         // add legend
-        var size = 10;
+        var size = 20;
         svg.selectAll("legend")
             .data(group)
             .enter()
             .append("rect")
-            .attr("x", (d, i) => {return width + margin.left + 10 + 120 * Math.floor(i/12)})
-            .attr("y", (d,i) => {return 20 + (i % 12) * (size + 20)}) 
+            .attr("x", (d, i) => {return margin.left + 10 + 120 * (i % 6)})
+            .attr("y", (d,i) => {return height + margin.top + 40 + Math.floor(i / 6) * (size + 20)}) 
             .attr('class', 'legend')
             .attr("width", size)
             .attr("height", size)
@@ -111,27 +124,26 @@ function create_stack_chart(){
             .data(group)
             .enter()
             .append("text")
-            .attr("x", (d, i) => {return width + margin.left + 10 + 120 * Math.floor(i/12)})
-            .attr("y", (d,i) => {return 20 + (i % 12) * (size + 20) + 1.7*size})
+            .attr("x", (d, i) => {return margin.left + 10 + size/2 + 120 * (i % 6)})
+            .attr("y", (d,i) => {return height + margin.top + 40 + Math.floor(i / 6) * (size + 20) + 1.7*size})
             .attr('class', "legend_label")
             .style("fill", function(d){ return color(d)})
-            .style('font-size', 'xx-small')
+            .style('font-size', 'x-small')
             .text(function(d){ return d})
-            .attr("text-anchor", "left")
-            .on("mouseover", highlight)
-            .on("mouseout", noHighlight);
+            .attr("text-anchor", "middle");
         
         function highlight(k){
             console.log(k)
             // reduce opacity of all groups
-            d3.select('svg').selectAll("path").style("opacity", .1)
+            //d3.select('svg.chart').selectAll("path").transition().ease(d3.easeLinear).style("opacity", .1);
             // expect the one that is hovered
-            stack.filter((d) => d.key == k).style("opacity", 1)
+            stack.filter((d) => d.key != k).transition()
+            .ease(d3.easeLinear).style("opacity", .1);
             };
           
         // when it is not hovered anymore
         function noHighlight(){
-            d3.select('svg').selectAll("path").style("opacity", 1)
+            d3.select('svg.chart').selectAll("path").style("opacity", 1)
             };
         })
     }

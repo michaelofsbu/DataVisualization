@@ -1,10 +1,10 @@
-update_bar_chart();
+//update_bar_chart();
 update_map("all");
 
 function update_map(cat){
-  var margin = {top: 0, right: 100, bottom: 0, left: 50},
+  var margin = {top: 50, right: 100, bottom: 0, left: 50},
       width = 400 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+      height = 600 - margin.top - margin.bottom;
 
   // append the svg object to the body of the page
   var Map = d3.select("#map")
@@ -107,19 +107,20 @@ function update_map(cat){
 }
 
 function update_bar_chart(){
+  d3.select('svg.chart').remove()
   var selected = 1;
   // set the dimensions and margins of the graph
-  var margin = {top: 80, right: 50, bottom: 80, left: 50},
+  var margin = {top: 30, right: 50, bottom: 150, left: 50},
       width = 800 - margin.left - margin.right,
-      height = 300 - margin.top - margin.bottom;
+      height = 400 - margin.top - margin.bottom;
 
   // append the svg object to the body of the page
-  var barChart = d3.select("#barChart")
+  var barChart = d3.select("#Chart")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       //.attr("transform", "translate(" + 400 + "," + 0 + ")")
-      .attr('class', 'Barchart')
+      .attr('class', 'chart')
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -160,31 +161,19 @@ function update_bar_chart(){
         .attr("transform", "rotate(60)")
         .style("text-anchor", "start");
 
-      // Add label to the X Axis
-      barChart.append("text")
-        .attr("class", "x label")
-        .attr("transform", "translate(" + (width/2) + "," + (height + margin.top - 5) + ")")
-        .style("text-anchor", "middle")
-        .style("font-size", "10")
-        .style("font-family", "Arial")
-        .text("Industry");
-
       // Add the Y Axis
       barChart.append("g")
         .attr("class", "y axis")
         .call(yAxis);
-
-      // Add label to the Y Axis
+      
+      // Add title
       barChart.append("text")
-        .attr("class", "y label")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left)
-        .attr("x", 0 - height/2)
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .style("font-size", "10")
-        .style("font-family", "Arial")
-        .text("Frequency");
+      .attr("class", "title")
+      .attr("transform", "translate(" + (width/2) + "," + 0 + ")")
+      .style("text-anchor", "middle")
+      .style("font-size", "10")
+      .style("font-family", "Arial")
+      .text("Population of Different Industry Type");
 
         barChart.selectAll(".bar")
         .data(data)

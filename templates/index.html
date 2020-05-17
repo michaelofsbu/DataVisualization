@@ -13,12 +13,17 @@
 </head>
 <body>
     <header>Industry in NYC</header>
-    <div id="map"></div>
+    <div id="map">
+        <p>Industry Distribution in NYC</p>
+    </div>
     <div id='zipcodePopover'> </div>
-    <div id="barChart"></div>
-   <div id="stackChart"></div>
+    <div id='menu'></div>
+    <div id="Chart"></div>
 
    <script src="{{ url_for('static', filename='barChartandMap.js') }}"></script>
+   <script src="{{ url_for('static', filename='stackareachart.js') }}"></script>
+   <script src="{{ url_for('static', filename='menu.js') }}"></script>
+
 
 </body>
 </html>

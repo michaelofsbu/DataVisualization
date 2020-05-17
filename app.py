@@ -1,4 +1,5 @@
 import json
+import pickle
 from flask import Flask, render_template, request, redirect, Response, jsonify
 from modules.dataprocessing import read
 import pandas as pd
@@ -27,17 +28,8 @@ def get_barchart():
 
 @app.route("/get_stackchart_data/<Licensetype>")
 def get_stackchart_data(Licensetype):
-    data = []
-    daterange = pd.date_range(start='2000-01', end='2020-05', freq='M')
-    processed_data['License_Expiration_Date'] = pd.to_datetime(processed_data['License_Expiration_Date'], format='%m/%d/%y', errors='coerce')
-    processed_data['License_Creation_Date'] = pd.to_datetime(processed_data['License_Creation_Date'], format='%m/%d/%y', errors='coerce')
-    industry = processed_data.loc[processed_data['License_Type'] == Licensetype, 'Industry'].unique()
-    for date in daterange:
-        temp = {}
-        temp['Date'] = str(date.year) + '-' + str(date.month) + '-' + str(date.day)
-        for type in industry:
-            temp[type] = len(processed_data.loc[(processed_data['Industry'] == type) & (processed_data['License_Expiration_Date'] > date) & (processed_data['License_Creation_Date'] < date)].index)
-        data.append(temp)
+    with open(Licensetype + ".txt", "rb") as fp:
+        data = pickle.load(fp)
     return jsonify(data)
 
 if __name__ == "__main__":
