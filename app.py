@@ -32,5 +32,11 @@ def get_stackchart_data(Licensetype):
         data = pickle.load(fp)
     return jsonify(data)
 
+@app.route('/get_graph_data')
+def get_graph_data():
+    with open('cor_data.txt') as f:
+        data = json.load(f)
+    return jsonify(data)
+
 if __name__ == "__main__":
     app.run(debug=True)

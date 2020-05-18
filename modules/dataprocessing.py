@@ -91,12 +91,50 @@ def get_industry(processed_data, Licensetype):
     with open(Licensetype + ".txt", "wb") as fp: 
         pickle.dump(data, fp)
 
+def get_corr_matrix(processed_data):
+    with open("Business.txt", "rb") as fp:
+        busi = pickle.load(fp)
+    with open("Individual.txt", "rb") as fp:
+        indi = pickle.load(fp)
+    list = busi + indi
+    industry = sorted(processed_data['Industry'].unique())
+    data = {}
+    for type in industry:
+        data[type] = []
+    for type in industry:
+        for l in list:
+            try:
+                data[type].append(l[type])
+            except KeyError:
+                continue
+    df = pd.DataFrame(data)
+    cor = df.corr(method='pearson')
+    data = {'nodes': [], 'links': []}
+    for type in industry:
+        n = {}
+        n['name'] = type
+        data['nodes'].append(n)
+        for type2 in industry:
+            if type2 != type:
+                if cor.loc[type, type2] > 0:
+                    l = {}
+                    l['source'] = type
+                    l['target'] = type2
+                    l['value'] = cor.loc[type, type2]
+                    data['links'].append(l)
+    with open('cor_data.txt', 'w') as json_file:
+        json.dump(data, json_file)
+        
+
+
 if __name__ == '__main__':
-    url = 'https://raw.githubusercontent.com/michaelofsbu/cse564_finaldata/master/Legally_Operating_Businesses.csv'
+    ''' url = 'https://raw.githubusercontent.com/michaelofsbu/cse564_finaldata/master/Legally_Operating_Businesses.csv'
     df = read(url)
     df.to_csv(r'./processed_data.csv', index=False)
     df = pd.read_csv('processed_data.csv')
     get_industry(df, 'Business')
-    get_industry(df, 'Individual')
+    get_industry(df, 'Individual') '''
+    df = pd.read_csv('processed_data.csv')
+    get_corr_matrix(df)
 
     
