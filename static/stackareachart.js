@@ -63,6 +63,7 @@ function create_stack_chart(color){
 
         d3.json(dataurl, function(data){
         var group = Object.keys(data[0]).filter((item)=> item!=='Date');
+        update_map(group);
 
         // compute stack area
         var series = d3.stack()
@@ -191,7 +192,7 @@ function create_stack_chart(color){
 
         }
         function restore(){
-            update_map('all');
+            update_map(group);
             d3.select('svg.chart').selectAll('g.axis').remove();
             d3.select('svg.chart').selectAll('path').remove();
             d3.select('svg.chart').select('text.title').remove();
