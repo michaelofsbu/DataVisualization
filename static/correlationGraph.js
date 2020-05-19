@@ -49,8 +49,40 @@ function create_corr_graph(color){
                     .attr('cx', d => {return d.x})
                     .attr('cy', d => {return d.y})
                     .attr("fill", d => color(d.id))
-                    .call(drag(simulation));
-                  
+                    .call(drag(simulation))
+                    .on("click", d => {
+                      var cat = [d.id];
+                      update_map(cat);
+                      node.style("opacity", function(o){
+                        var connected = 0;
+                        for (l in links){
+                          if((links[l].source == o && links[l].target == d) || (links[l].source == d && links[l].target == o) || d == o){
+                            connected = 1;
+                          }
+                        }
+                        if (connected == 1){
+                          return 1;
+                        }else{
+                          return 0.2;
+                        }
+                      });
+                      link.style("opacity", function(o){
+                        if (o.source == d || o.target == d){
+                          return 1
+                        }else{
+                          return 0.2;
+                        }
+                      })
+                    })
+                    .on("mouseout", d => {
+                      node.style("opacity", function(o){
+                        return 1;
+                      });
+                      link.style("opacity", function(o){
+                        return 1;
+                      })
+                    });
+
         node.append("title")
             .text(d => d.id);
 
@@ -69,18 +101,18 @@ function create_corr_graph(color){
             d.fx = d.x;
             d.fy = d.y;
           }
-          
+
           function dragged(d) {
             d.fx = d3.event.x;
             d.fy = d3.event.y;
           }
-          
+
           function dragended(d) {
             if (!d3.event.active) simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
           }
-          
+
           return d3.drag()
               .on("start", dragstarted)
               .on("drag", dragged)
