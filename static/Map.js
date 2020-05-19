@@ -16,12 +16,10 @@ function update_map(cat){
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  var max = 0;
-
   var url = "get_map_data/" + cat;
   d3.json(url, function(data_infunc) {
     map_data = JSON.parse(data_infunc)
-
+    console.log(map_data);
     d3.json("https://raw.githubusercontent.com/YanMa1/CSE564_Final_Project/master/nycbyzipcode.json", function(error, nyc) {
       if (error) throw error;
 
@@ -36,13 +34,30 @@ function update_map(cat){
         .enter().append("path")
         .attr("d", path)
         .style("fill", function(d) {
+          var max = 0;
           var count = 0;
           for (i in map_data){
+            if (map_data[i].count > max){
+              max = map_data[i].count;
+            }
             if (map_data[i].zip == d.properties.postalCode){
               count = map_data[i].count;
             }
           }
-          return d3.interpolateYlGn(count * 0.2);
+          delta = max / 5;
+          if(count == 0){
+              return d3.interpolateYlGn(0);
+          }else if(count < delta){
+              return d3.interpolateYlGn(0.2);
+          }else if(count < delta * 2){
+            return d3.interpolateYlGn(0.4);
+          }else if(count < delta * 3){
+            return d3.interpolateYlGn(0.6);
+          }else if(count < delta * 4){
+            return d3.interpolateYlGn(0.8);
+          }else{
+            return d3.interpolateYlGn(1);
+          }
         })
         .on("mouseenter", function(d) {
           //console.log(d);
@@ -63,16 +78,30 @@ function update_map(cat){
           d3.select(this)
             .style("stroke-width", .25)
             .style("fill", function(d) {
+              var max = 0;
               var count = 0;
               for (i in map_data){
+                if (map_data[i].count > max){
+                  max = map_data[i].count;
+                }
                 if (map_data[i].zip == d.properties.postalCode){
                   count = map_data[i].count;
                 }
               }
-              if (count * 0.2 > max){
-                max = count * 0.2;
+              delta = max / 5;
+              if(count == 0){
+                  return d3.interpolateYlGn(0);
+              }else if(count < delta){
+                  return d3.interpolateYlGn(0.2);
+              }else if(count < delta * 2){
+                return d3.interpolateYlGn(0.4);
+              }else if(count < delta * 3){
+                return d3.interpolateYlGn(0.6);
+              }else if(count < delta * 4){
+                return d3.interpolateYlGn(0.8);
+              }else{
+                return d3.interpolateYlGn(1);
               }
-              return d3.interpolateYlGn(count * 0.2);
             })
             .style("stroke-dasharray", 1);
           d3.select('#zipcodePopover')
@@ -81,14 +110,15 @@ function update_map(cat){
         });
 
       // Color legend.
-      range = [d3.interpolateYlGn(0), d3.interpolateYlGn(0.2), d3.interpolateYlGn(0.4), d3.interpolateYlGn(0.6), d3.interpolateYlGn(0.8), d3.interpolateYlGn(1)];
-      var colorScale = d3.scaleQuantile()
-        .domain([0, 1])
+      range = [d3.interpolateYlGn(0), d3.interpolateYlGn(1)];
+      var colorScale = d3.scaleLinear()
+        .domain([0, d3.max(map_data, function(d) { return d.count/100; })])
         .range(range);
 
       var colorLegend = d3.legendColor()
-        .labelFormat(d3.format(".0%"))
+        .labelFormat(d3.format(".02%"))
         .scale(colorScale)
+        .cells(5)
         .shapePadding(2)
         .shapeWidth(10)
         .shapeHeight(10)

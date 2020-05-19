@@ -12,7 +12,7 @@ function create_stack_chart(color){
                 .attr("class", "chart")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
-    
+
     // Make title
     svg.append('text')
     .attr("class", "title")
@@ -24,7 +24,7 @@ function create_stack_chart(color){
     // create buttons for choosing license type
     var license_type = ["Business", "Individual"];
     var usr_choice;
-    // Add one dot in the button for each name.   
+    // Add one dot in the button for each name.
     var button = svg.selectAll("button")
                     .data(license_type)
                     .enter()
@@ -45,11 +45,11 @@ function create_stack_chart(color){
                           .attr("x", (d, i) => 40 + + i*100)
                           .attr("y", 25)
                           .text(function(d){ return d})
-                          .attr("text-anchor", "left");  
+                          .attr("text-anchor", "left");
     plot('Business', color);
     function choose_license_type(d){
-        usr_choice=d; 
-        d3.select('svg.chart').selectAll('circle').attr('class', 'button'); 
+        usr_choice=d;
+        d3.select('svg.chart').selectAll('circle').attr('class', 'button');
         d3.select(this).attr('class', 'button_clicked');
         plot(usr_choice, color);
     }
@@ -100,7 +100,7 @@ function create_stack_chart(color){
            .attr("d", d3.area().x(function(d, i) { return x(new Date(d.data.Date)); })
                                .y0(function(d) { return y(d[0]); })
                                .y1(function(d) { return y(d[1]); }));
-        
+
          // Add color legend
     var w = 130, h = 20;
     svg.selectAll("legend")
@@ -108,7 +108,7 @@ function create_stack_chart(color){
         .enter()
         .append("rect")
         .attr("x", (d, i) => {return 30 + w * (i % 6)})
-        .attr("y", (d,i) => {return 35 + Math.floor(i / 6) * (h)}) 
+        .attr("y", (d,i) => {return 35 + Math.floor(i / 6) * (h)})
         .attr('class', 'legend')
         .attr("width", w)
         .attr("height", h)
@@ -133,7 +133,8 @@ function create_stack_chart(color){
         .on('click', update_stack_chart);
 
         function update_stack_chart(k){
-            update_map(k);
+            var cat = [k];
+            update_map(cat);
             var select_data = [];
             for (i in data){
                 temp = {};
@@ -172,7 +173,7 @@ function create_stack_chart(color){
              .duration(400)
              .delay((d, i) => i*50)
              .call(d3.axisLeft(y));
- 
+
             plot.append("path")
                 .datum(select_data)
                 .attr("fill", color(k))
@@ -187,7 +188,7 @@ function create_stack_chart(color){
                .y0(y(0))
                .y1(function(d) { console.log(y(d[k])); return y(d[k]) })
                );
-            
+
         }
         function restore(){
             update_map('all');
@@ -236,7 +237,7 @@ function create_stack_chart(color){
             .y0(function(d) { return y(d[0]); })
             .y1(function(d) { return y(d[1]); }));
         }
-        
+
         function highlight(k){
             //console.log(k)
             // reduce opacity of all groups
@@ -245,8 +246,8 @@ function create_stack_chart(color){
             stack.filter((d) => d.key != k).transition()
             .ease(d3.easeLinear).style("opacity", .1);
             }
-           
-          
+
+
         // when it is not hovered anymore
         function noHighlight(){
             d3.select('svg.chart').selectAll("path").style("opacity", 1)

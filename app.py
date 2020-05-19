@@ -18,6 +18,7 @@ def index():
 
 @app.route("/get_map_data/<cat>")
 def get_map_data(cat):
+    print(cat)
     data = json.dumps(bfuncs.get_map_info(processed_data, cat).to_dict(orient='records'))
     return jsonify(data)
 

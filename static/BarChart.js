@@ -4,7 +4,7 @@ function update_bar_chart(color){
     var margin = {top: 150, right: 50, bottom: 10, left: 50},
         width = 800 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
-  
+
     // append the svg object to the body of the page
     var svg = d3.select("#Chart")
         .append("svg")
@@ -14,14 +14,14 @@ function update_bar_chart(color){
         .attr('class', 'chart');
     var barChart = svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
+
     var x = d3.scaleBand().range([0, width]).padding(0.1);
     var y = d3.scaleLinear().range([height, 0]);
-  
+
     // Define the axes
     var xAxis = d3.axisBottom(x);
     var yAxis = d3.axisLeft(y);
-  
+
     d3.json("get_barchart_data", function(data_infunc) {
         data = JSON.parse(data_infunc)
         // Add color legend
@@ -31,7 +31,7 @@ function update_bar_chart(color){
         .enter()
         .append("rect")
         .attr("x", (d, i) => {return 30 + w * (i % 6)})
-        .attr("y", (d,i) => {return 10 + Math.floor(i / 6) * (h)}) 
+        .attr("y", (d,i) => {return 10 + Math.floor(i / 6) * (h)})
         .attr('class', 'legend')
         .attr("width", w)
         .attr("height", h)
@@ -40,7 +40,8 @@ function update_bar_chart(color){
         .on("mouseover", highlight)
         .on("mouseout", noHighlight)
         .on("click", function(d) {
-            update_map(d.industry);
+            var cat = [d.industry];
+            update_map(cat);
           });
     // add legend label
     svg.selectAll("legend_label")
@@ -57,16 +58,17 @@ function update_bar_chart(color){
         .style("cursor", "pointer")
         .on("click", function(d) {
             d3.select("#map").select("svg").remove();
-            update_map(d.industry);
+            var cat = [d.industry];
+            update_map(cat);
           });
 
         data = data.sort((a, b) => (a.count < b.count) ? 1 : -1);
         // Scale the range of the data
         var x_values = data.map(function(d) {return d.industry;});
-  
+
         x.domain(x_values);
         y.domain([0, d3.max(data, function(d) { return d.count; })]);
-  
+
         // Add the X Axis
         barChart.append("g")
           .attr("class", "x axis")
@@ -81,12 +83,12 @@ function update_bar_chart(color){
           .style("font-family", "Arial")
           .attr("transform", "rotate(60)")
           .style("text-anchor", "start"); */
-  
+
         // Add the Y Axis
         barChart.append("g")
           .attr("class", "y axis")
           .call(yAxis);
-        
+
         // Add title
         barChart.append("text")
         .attr("class", "title")
@@ -95,7 +97,7 @@ function update_bar_chart(color){
         .style("font-size", "10")
         .style("font-family", "Arial")
         .text("Population of Different Industry Type");
-  
+
         var Bar = barChart.selectAll(".bar")
           .data(data)
           .enter().append("rect")
@@ -104,7 +106,8 @@ function update_bar_chart(color){
           .on("mouseover", highlight_bar)
           .on("mouseout", noHighlight_bar)
           .on("click", function(d) {
-            update_map(d.industry);
+            var cat = [d.industry];
+            update_map(cat);
           })
           .style("cursor", "pointer")
           .attr("x", function(d) { return x(d.industry); })
@@ -124,7 +127,7 @@ function update_bar_chart(color){
             legend.filter((k) => k.industry == d.industry).transition()
               .ease(d3.easeLinear).style("opacity", 1);
             barChart.append('text')
-              .attr('class', 'val') 
+              .attr('class', 'val')
               .attr('x', () => x(d.industry) - 2.5 + x.bandwidth()/2)
               .attr('y', () => y(d.count) - 7)
               .text(() => d.count)
@@ -156,13 +159,13 @@ function update_bar_chart(color){
               .attr("x", function(d) { return x(d.industry)-2.5; })
               .attr("y", function(d) { return y(d.count) - 5; });
             barChart.append('text')
-              .attr('class', 'val') 
+              .attr('class', 'val')
               .attr('x', () => x(k.industry) - 2.5 + x.bandwidth()/2)
               .attr('y', () => y(k.count) - 7)
               .text(() => k.count)
               .attr("text-anchor", "middle");
             }
-          
+
         // when it is not hovered anymore
         function noHighlight(){
             d3.select('svg.chart')
@@ -174,7 +177,6 @@ function update_bar_chart(color){
               .attr("y", function(d) { return y(d.count); });
             d3.select('svg.chart').selectAll('text.val').remove();
             };
-  
+
         });
 }
-  

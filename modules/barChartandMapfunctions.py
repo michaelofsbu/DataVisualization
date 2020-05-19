@@ -17,8 +17,15 @@ def get_map_info(df, argument):
     if argument == "all":
         businesses_by_zip = df
     else:
-        businesses_by_zip = df.loc[df['Industry'] == argument]
+        businesses_by_zip = pd.DataFrame(np.zeros([1, len(df.columns)]))
+        argument_list = argument.split(',')
+        for a in argument_list:
+            temp = df.loc[df['Industry'] == a]
+            businesses_by_zip = pd.concat([businesses_by_zip, temp], axis=0)
+
     businesses_by_zip = businesses_by_zip[['Address_ZIP']]
+
+    businesses_by_zip = businesses_by_zip.drop(businesses_by_zip.index[0])
 
     zips = businesses_by_zip.Address_ZIP.unique().tolist()
     frequencies = pd.DataFrame(np.zeros(len(zips)), columns=['count'])
@@ -33,4 +40,4 @@ def get_map_info(df, argument):
     return frequencies
 
 # df = pd.read_csv("../processed_data.csv")
-# print(get_map_info(df, 'Electronics Store')['count'].sum())
+# print(get_map_info(df, ['Electronics Store', 'Laundry']))
