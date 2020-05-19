@@ -112,7 +112,7 @@ def get_corr_matrix(processed_data):
     data = {'nodes': [], 'links': []}
     for type in industry:
         n = {}
-        n['name'] = type
+        n['id'] = type
         data['nodes'].append(n)
         for type2 in industry:
             if type2 != type:

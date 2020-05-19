@@ -10,86 +10,60 @@ function create_corr_graph(color){
                 .attr("class", "chart")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
+    var g = svg.append("g");
 
     var dataurl = '/get_graph_data';
     d3.json(dataurl, function(data){
         console.log(data);
-        /* var links = data.links.map(d => Object.create(d));
+
+        var links = data.links.map(d => Object.create(d));
         var nodes = data.nodes.map(d => Object.create(d));
+        console.log(nodes);
 
         var simulation = d3.forceSimulation(nodes)
-                            .force("link", d3.forceLink(links).id(d => d.name))
-                            .force("charge", d3.forceManyBody())
-                            .force("center", d3.forceCenter(width / 2, height / 2)); */
+                        .force("link", d3.forceLink(links).id(d => d.id))
+                        .force("charge", d3.forceManyBody().strength(200).distanceMax(400).distanceMin(60))
+                        .force("center", d3.forceCenter(0, 0));
 
-        var force = d3.layout.force()
-                    .linkDistance(60)
-                    .charge(-300)
-                    .size([width,height]);
-        force.nodes(data.nodes)
-                    .links(data.links)
-                    .start();
-
-        var link = g.selectAll(".link")
-                    .data(data.links)
-                    .enter().append("line")
-                    .attr("class", "link")
-                    .style("stroke-width", d => d.value)
-                    .style("stroke", "#999" )
-
-        var node = g.selectAll(".node")
-                    .data(graph.nodes)
-                    .enter().append("g")
-                    .attr("class", "node")
-                    .call(force.drag);
-        /* var link = svg.selectAll("line")
+        var link = g.selectAll('.link')
                     .data(links)
-                    .enter()
-                    .append("line")
+                    .enter().append('line')
+                    .attr('class', 'link')
                     .attr("stroke", "#999")
                     .attr("stroke-opacity", 0.6)
+                    .attr("x1", d => d.source.x + width/2)
+                    .attr("y1", d => d.source.y + height/2)
+                    .attr("x2", d => d.target.x + width/2)
+                    .attr("y2", d => d.target.y + height/2) 
                     .attr("stroke-width", d => d.value);
+                  
+        var node = g.selectAll('.node')
+                    .data(nodes)
+                    .enter().append('circle')
+                    .attr('class', 'node')
+                    .attr("stroke", "#fff")
+                    .attr("stroke-width", 1.5)
+                    .attr("r", 5)
+                    .attr('cx', (d) => width/2 + d.x)
+                    .attr('cy', (d) => height/2 + d.y)
+                    .attr("fill", (d) => color(d.id));
+                        //.call(drag(simulation));
+                  
+        node.append("title")
+            .text(d => d.id);
 
-        var node = svg.selectAll("circle")
-                        .data(nodes)
-                        .enter()
-                        .append("circle")
-                        .attr("r", 5)
-                        .attr("stroke", "#fff")
-                        .attr("stroke-width", 1.5)
-                        .attr("fill", 'black');
-        node.append("text")
-            .attr('class', 'label')
-            .attr('font-size', 'xx-small')
-            .text(d => d.name);
-        simulation.on("tick", () => {
-            link.attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x + width/2)
+                    .attr("y1", d => d.source.y + height/2)
+                    .attr("x2", d => d.target.x + width/2)
+                    .attr("y2", d => d.target.y + height/2);
             
-            node.attr("cx", function(d) {
-                if (d.x > width){
-                    return width
-                }
-                if (d.x < 0){
-                    return 0;
-                }
-              })
-              .attr("cy", function(d) {
-                if (d.y > height){
-                    return height
-                }
-                if (d.y < 0){
-                    return 0;
-                }
-              })
+                node
+                    .attr("cx", d =>{return d.x})
+                    .attr("cy", d => d.y);
               });
-             */
-        //invalidation.then(() => simulation.stop());
     });
-
-
     function drag(simulation){
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();
@@ -113,4 +87,5 @@ function create_corr_graph(color){
               .on("drag", dragged)
               .on("end", dragended);
     }
+
 }
