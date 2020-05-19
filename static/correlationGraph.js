@@ -16,14 +16,15 @@ function create_corr_graph(color){
     d3.json(dataurl, function(data){
         console.log(data);
 
-        var links = data.links.map(d => Object.create(d));
-        var nodes = data.nodes.map(d => Object.create(d));
+        var links = data.links;//.map(d => Object.create(d));
+        var nodes = data.nodes;//.map(d => Object.create(d));
         console.log(nodes);
+        console.log(links);
 
         var simulation = d3.forceSimulation(nodes)
                         .force("link", d3.forceLink(links).id(d => d.id))
-                        .force("charge", d3.forceManyBody().strength(200).distanceMax(400).distanceMin(60))
-                        .force("center", d3.forceCenter(0, 0));
+                        .force("charge", d3.forceManyBody().strength(-50).distanceMax(100).distanceMin(60))
+                        .force("center", d3.forceCenter(width/2, height/2));
 
         var link = g.selectAll('.link')
                     .data(links)
@@ -44,33 +45,33 @@ function create_corr_graph(color){
                     .attr("stroke", "#fff")
                     .attr("stroke-width", 1.5)
                     .attr("r", 5)
-                    .attr('cx', d => {return width/2 + d.x})
-                    .attr('cy', d => {return height/2 + d.y})
+                    .attr('cx', d => {return d.x})
+                    .attr('cy', d => {return d.y})
                     .attr("fill", d => color(d.id))
                     .call(drag(simulation));
                   
         node.append("title")
             .text(d => d.id);
 
-       /*  simulation.on("tick", () => {
-            link.attr("x1", d => {return d.source.x + width/2})
-                .attr("y1", d => {return d.source.y + height/2})
-                .attr("x2", d => {return d.target.x + width/2})
-                .attr("y2", d => {return d.target.y + height/2});
-            node.attr("cx", d => {return d.x + width/2})
-                .attr("cy", d => {return d.y + height/2});
-              }); */
+        simulation.on("tick", () => {
+            link.attr("x1", d => {return d.source.x})
+                .attr("y1", d => {return d.source.y})
+                .attr("x2", d => {return d.target.x})
+                .attr("y2", d => {return d.target.y});
+            node.attr("cx", d => {return d.x})
+                .attr("cy", d => {return d.y});
+              });
     });
     function drag(simulation){
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x + width/2;
-            d.fy = d.y + height/2;
+            d.fx = d.x;
+            d.fy = d.y;
           }
           
           function dragged(d) {
-            d.fx = d3.event.x + width/2;
-            d.fy = d3.event.y + height/2;
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
           }
           
           function dragended(d) {
