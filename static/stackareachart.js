@@ -132,6 +132,8 @@ function create_stack_chart(color){
         .text(function(d){ return d})
         .attr("text-anchor", "left")
         .style("cursor", "pointer")
+        .on("mouseover", highlight)
+        .on("mouseout", noHighlight)
         .on('click', update_stack_chart);
 
         function update_stack_chart(k){

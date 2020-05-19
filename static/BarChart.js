@@ -55,6 +55,8 @@ function update_bar_chart(color){
         .style('font-size', 'x-small')
         .text(function(d){ return d.industry})
         .attr("text-anchor", "left")
+        .on("mouseover", highlight)
+        .on("mouseout", noHighlight)
         .style("cursor", "pointer")
         .on("click", function(d) {
             d3.select("#map").select("svg").remove();
