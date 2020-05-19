@@ -31,10 +31,10 @@ function create_corr_graph(color){
                     .attr('class', 'link')
                     .attr("stroke", "#999")
                     .attr("stroke-opacity", 0.6)
-                    .attr("x1", d => d.source.x + width/2)
-                    .attr("y1", d => d.source.y + height/2)
-                    .attr("x2", d => d.target.x + width/2)
-                    .attr("y2", d => d.target.y + height/2) 
+                    .attr("x1", d => {return d.source.x + width/2})
+                    .attr("y1", d => {return d.source.y + height/2})
+                    .attr("x2", d => {return d.target.x + width/2})
+                    .attr("y2", d => {return d.target.y + height/2}) 
                     .attr("stroke-width", d => d.value);
                   
         var node = g.selectAll('.node')
@@ -44,36 +44,33 @@ function create_corr_graph(color){
                     .attr("stroke", "#fff")
                     .attr("stroke-width", 1.5)
                     .attr("r", 5)
-                    .attr('cx', (d) => width/2 + d.x)
-                    .attr('cy', (d) => height/2 + d.y)
-                    .attr("fill", (d) => color(d.id));
-                        //.call(drag(simulation));
+                    .attr('cx', d => {return width/2 + d.x})
+                    .attr('cy', d => {return height/2 + d.y})
+                    .attr("fill", d => color(d.id))
+                    .call(drag(simulation));
                   
         node.append("title")
             .text(d => d.id);
 
-            simulation.on("tick", () => {
-                link
-                    .attr("x1", d => d.source.x + width/2)
-                    .attr("y1", d => d.source.y + height/2)
-                    .attr("x2", d => d.target.x + width/2)
-                    .attr("y2", d => d.target.y + height/2);
-            
-                node
-                    .attr("cx", d =>{return d.x})
-                    .attr("cy", d => d.y);
-              });
+       /*  simulation.on("tick", () => {
+            link.attr("x1", d => {return d.source.x + width/2})
+                .attr("y1", d => {return d.source.y + height/2})
+                .attr("x2", d => {return d.target.x + width/2})
+                .attr("y2", d => {return d.target.y + height/2});
+            node.attr("cx", d => {return d.x + width/2})
+                .attr("cy", d => {return d.y + height/2});
+              }); */
     });
     function drag(simulation){
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
+            d.fx = d.x + width/2;
+            d.fy = d.y + height/2;
           }
           
           function dragged(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
+            d.fx = d3.event.x + width/2;
+            d.fy = d3.event.y + height/2;
           }
           
           function dragended(d) {
