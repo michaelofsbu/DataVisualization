@@ -245,8 +245,7 @@ function create_stack_chart(color){
             // reduce opacity of all groups
             //d3.select('svg.chart').selectAll("path").transition().ease(d3.easeLinear).style("opacity", .1);
             // expect the one that is hovered
-            stack.filter((d) => d.key != k).transition()
-            .ease(d3.easeLinear).style("opacity", .1);
+            stack.filter((d) => d.key != k).style("opacity", .1);
             }
 
 

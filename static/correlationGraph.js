@@ -25,7 +25,7 @@ function create_corr_graph(color){
 
         var simulation = d3.forceSimulation(nodes)
                         .force("link", d3.forceLink(links).id(d => d.id))
-                        .force("charge", d3.forceManyBody().strength(-50).distanceMax(200).distanceMin(50))
+                        .force("charge", d3.forceManyBody().strength(-50).distanceMax(200).distanceMin(100))
                         .force("center", d3.forceCenter(width/2, height/2));
 
         var link = g.selectAll('.link')

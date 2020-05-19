@@ -1,7 +1,7 @@
 create_menu();
 function create_menu(){
     var margin = {top: 0, right: 0, bottom: 0, left: 0},
-      width = 500 - margin.left - margin.right,
+      width = 800 - margin.left - margin.right,
       height = 90 - margin.top - margin.bottom;
 
     var industry_name = ['Amusement', 'Car Wash', 'Dealer In Products', 'Debt Collection Agency',
@@ -34,7 +34,7 @@ function create_menu(){
                     .append('circle')
                     .attr('class', 'menu')
                     .attr('cy', height/2)
-                    .attr('cx', function(d,i){ return 30 + i*150})
+                    .attr('cx', function(d,i){ return 30 + i*200})
                     .attr('r', 10)
                     .each(function(d){if (d == 'Bar Chart'){d3.select(this).attr('class', 'menu_choosed')}})
                     .on('mouseover', function(){d3.select(this).transition().duration(100).attr('r', 15);})
@@ -46,7 +46,7 @@ function create_menu(){
                           .append("text")
                           .attr('class', 'menu_label')
                           .attr("y", height/2 + 5)
-                          .attr("x", function(d,i){ return 45 + i*150})
+                          .attr("x", function(d,i){ return 45 + i*200})
                           .text(function(d){ return d})
                           .attr("text-anchor", "left")
                           .attr("font-family", "Arial");

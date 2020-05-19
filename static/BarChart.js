@@ -124,8 +124,7 @@ function update_bar_chart(color){
               .attr("x", function(d) { return x(d.industry)-2.5; })
               .attr("y", function(d) { return y(d.count) - 5; });
             d3.select('svg.chart').selectAll(".legend").style("opacity", .1);
-            legend.filter((k) => k.industry == d.industry).transition()
-              .ease(d3.easeLinear).style("opacity", 1);
+            legend.filter((k) => k.industry == d.industry).style("opacity", 1);
             barChart.append('text')
               .attr('class', 'val')
               .attr('x', () => x(d.industry) - 2.5 + x.bandwidth()/2)
@@ -151,8 +150,7 @@ function update_bar_chart(color){
             //d3.select('svg.chart').selectAll("path").transition().ease(d3.easeLinear).style("opacity", .1);
             // expect the one that is hovered
             d3.select('svg.chart').selectAll(".bar").style("opacity", .1)
-            Bar.filter((d) => d.industry == k.industry).transition()
-            .ease(d3.easeLinear)
+            Bar.filter((d) => d.industry == k.industry)
             .style("opacity", 1)
             .attr("height", function(d) { return height - y(d.count) + 5; })
               .attr("width", x.bandwidth()+5)

@@ -23,7 +23,6 @@ function update_map(cat){
       .style("font-size", "16")
       .style("font-family", "Arial")
       .style("text-decoration", "capitalize")
-      .style("font-weight", "bold")
       .text("Industry Distribution in NYC");
 
   var url = "get_map_data/" + cat;
