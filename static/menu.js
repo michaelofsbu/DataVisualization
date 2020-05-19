@@ -27,7 +27,7 @@ function create_menu(){
       //.attr("transform","translate(" + margin.left + "," + margin.top + ")");
 
     var menuName = ['Bar Chart', 'Stack Area Chart', 'Correlation Graph'];
-    // Add one dot in the button for each name.   
+    // Add one dot in the button for each name.
     var button = Menu.selectAll("menu")
                     .data(menuName)
                     .enter()
@@ -48,7 +48,8 @@ function create_menu(){
                           .attr("y", height/2 + 5)
                           .attr("x", function(d,i){ return 45 + i*150})
                           .text(function(d){ return d})
-                          .attr("text-anchor", "left");
+                          .attr("text-anchor", "left")
+                          .attr("font-family", "Arial");
 /*     // Add color legend
     var w = 130, h = 20;
     Menu.selectAll("legend")
@@ -56,7 +57,7 @@ function create_menu(){
         .enter()
         .append("rect")
         .attr("x", (d, i) => {return 30 + w * (i % 6)})
-        .attr("y", (d,i) => {return margin.top + Math.floor(i / 6) * (h)}) 
+        .attr("y", (d,i) => {return margin.top + Math.floor(i / 6) * (h)})
         .attr('class', 'legend')
         .attr("width", w)
         .attr("height", h)
@@ -78,7 +79,7 @@ function create_menu(){
     update_bar_chart(color);
     function draw(d){
         console.log(d);
-        d3.select('svg.Menu').selectAll('circle').attr('class', 'menu'); 
+        d3.select('svg.Menu').selectAll('circle').attr('class', 'menu');
         d3.select(this).attr('class', 'menu_choosed');
         if (d == 'Bar Chart'){
             update_bar_chart(color);

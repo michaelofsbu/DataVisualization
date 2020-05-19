@@ -16,6 +16,16 @@ function update_map(cat){
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+  Map.append("text")
+      .attr("x", (width/2))
+      .attr("y", (0 - 20))
+      .attr("text-anchor", "middle")
+      .style("font-size", "16")
+      .style("font-family", "Arial")
+      .style("text-decoration", "capitalize")
+      .style("font-weight", "bold")
+      .text("Industry Distribution in NYC");
+
   var url = "get_map_data/" + cat;
   d3.json(url, function(data_infunc) {
     map_data = JSON.parse(data_infunc)

@@ -45,7 +45,8 @@ function create_stack_chart(color){
                           .attr("x", (d, i) => 40 + + i*100)
                           .attr("y", 25)
                           .text(function(d){ return d})
-                          .attr("text-anchor", "left");
+                          .attr("text-anchor", "left")
+                          .attr("font-family", "Arial");
     plot('Business', color);
     function choose_license_type(d){
         usr_choice=d;
