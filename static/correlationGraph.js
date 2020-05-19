@@ -1,6 +1,6 @@
 function create_corr_graph(color){
     d3.select('svg.chart').remove();
-    var margin = {top: 0, right: 0, bottom: 0, left: 0},
+    var margin = {top: 100, right: 10, bottom: 10, left: 10},
         width = 800 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
@@ -10,7 +10,8 @@ function create_corr_graph(color){
                 .attr("class", "chart")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
-    var g = svg.append("g");
+    var g = svg.append("g")
+               .attr('transform', "translate(" + margin.left + "," + margin.top + ")")
 
     var dataurl = '/get_graph_data';
     d3.json(dataurl, function(data){
@@ -23,7 +24,7 @@ function create_corr_graph(color){
 
         var simulation = d3.forceSimulation(nodes)
                         .force("link", d3.forceLink(links).id(d => d.id))
-                        .force("charge", d3.forceManyBody().strength(-50).distanceMax(100).distanceMin(60))
+                        .force("charge", d3.forceManyBody().strength(-10).distanceMax(100).distanceMin(60))
                         .force("center", d3.forceCenter(width/2, height/2));
 
         var link = g.selectAll('.link')
@@ -31,12 +32,12 @@ function create_corr_graph(color){
                     .enter().append('line')
                     .attr('class', 'link')
                     .attr("stroke", "#999")
-                    .attr("stroke-opacity", 0.6)
+                    .attr("stroke-opacity", d =>  d.value)
                     .attr("x1", d => {return d.source.x + width/2})
                     .attr("y1", d => {return d.source.y + height/2})
                     .attr("x2", d => {return d.target.x + width/2})
                     .attr("y2", d => {return d.target.y + height/2}) 
-                    .attr("stroke-width", d => d.value);
+                    .attr("stroke-width", d => Math.sqrt(Math.exp(d.value*10)/1000));
                   
         var node = g.selectAll('.node')
                     .data(nodes)
@@ -44,7 +45,7 @@ function create_corr_graph(color){
                     .attr('class', 'node')
                     .attr("stroke", "#fff")
                     .attr("stroke-width", 1.5)
-                    .attr("r", 5)
+                    .attr("r", 10)
                     .attr('cx', d => {return d.x})
                     .attr('cy', d => {return d.y})
                     .attr("fill", d => color(d.id))
@@ -54,12 +55,12 @@ function create_corr_graph(color){
             .text(d => d.id);
 
         simulation.on("tick", () => {
-            link.attr("x1", d => {return d.source.x})
-                .attr("y1", d => {return d.source.y})
-                .attr("x2", d => {return d.target.x})
-                .attr("y2", d => {return d.target.y});
-            node.attr("cx", d => {return d.x})
-                .attr("cy", d => {return d.y});
+            link.attr("x1", d => {return Math.max(0, Math.min(d.source.x, width))})
+                .attr("y1", d => {return Math.max(0, Math.min(d.source.y, height))})
+                .attr("x2", d => {return  Math.max(0, Math.min(d.target.x, width))})
+                .attr("y2", d => {return Math.max(0, Math.min(d.target.y, height))});
+            node.attr("cx", d => {return Math.max(0, Math.min(d.x, width)) })
+                .attr("cy", d => {return Math.max(0, Math.min(d.y, height))});
               });
     });
     function drag(simulation){

@@ -116,7 +116,7 @@ def get_corr_matrix(processed_data):
         data['nodes'].append(n)
         for type2 in industry:
             if type2 != type:
-                if cor.loc[type, type2] > 0.85:
+                if cor.loc[type, type2] > 0.8:
                     l = {}
                     l['source'] = type
                     l['target'] = type2
