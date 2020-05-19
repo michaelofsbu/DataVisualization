@@ -8,13 +8,38 @@ function update_map(cat){
       height = 600 - margin.top - margin.bottom;
 
   // append the svg object to the body of the page
-  var Map = d3.select("#map")
+  var svg = d3.select("#map")
       .append("svg")
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
       .attr('class', 'Map')
-      .append("g")
+  var Map = svg.append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  svg.append('ellipse')
+    .attr('cx', 270)
+    .attr('cy', 520)
+    .attr('class', 'reset')
+    .attr('rx', 30)
+    .attr('ry', 20)
+    .attr('fill', 'grey')
+    .attr('opacity', 0.7)
+    .style("cursor", "pointer")
+    .on("click", function() {
+      update_map('all');
+    });
+
+  svg.append('text')
+    .attr('x', 270)
+    .attr('y', 500 + 25)
+    .attr('class', 'reset')
+    .style("cursor", "pointer")
+    .text('Reset')
+    .attr("text-anchor", "middle")
+    .attr('fill', 'white')
+    .style("font-family", "Arial")
+    .on("click", function() {
+      update_map('all');
+    });
 
   Map.append("text")
       .attr("x", (width/2))
