@@ -1,6 +1,6 @@
 function create_corr_graph(color){
     d3.select('svg.chart').remove();
-    var margin = {top: 100, right: 10, bottom: 10, left: 10},
+    var margin = {top: 50, right: 50, bottom: 50, left: 50},
         width = 800 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
@@ -21,10 +21,11 @@ function create_corr_graph(color){
         var nodes = data.nodes;//.map(d => Object.create(d));
         console.log(nodes);
         console.log(links);
+        s = d3.scaleLinear().range([1, 10]).domain([0.85, 1]);
 
         var simulation = d3.forceSimulation(nodes)
                         .force("link", d3.forceLink(links).id(d => d.id))
-                        .force("charge", d3.forceManyBody().strength(-10).distanceMax(100).distanceMin(60))
+                        .force("charge", d3.forceManyBody().strength(-50).distanceMax(200).distanceMin(50))
                         .force("center", d3.forceCenter(width/2, height/2));
 
         var link = g.selectAll('.link')
@@ -32,59 +33,78 @@ function create_corr_graph(color){
                     .enter().append('line')
                     .attr('class', 'link')
                     .attr("stroke", "#999")
-                    .attr("stroke-opacity", d =>  d.value)
+                    .attr("stroke-opacity", 1)
                     .attr("x1", d => {return d.source.x + width/2})
                     .attr("y1", d => {return d.source.y + height/2})
                     .attr("x2", d => {return d.target.x + width/2})
                     .attr("y2", d => {return d.target.y + height/2}) 
-                    .attr("stroke-width", d => Math.sqrt(Math.exp(d.value*10)/1000));
-                  
+                    .attr("stroke-width", d => s(d.value));
+        var node_r = 15;          
         var node = g.selectAll('.node')
                     .data(nodes)
                     .enter().append('circle')
                     .attr('class', 'node')
                     .attr("stroke", "#fff")
                     .attr("stroke-width", 1.5)
-                    .attr("r", 10)
+                    .attr("r", node_r)
                     .attr('cx', d => {return d.x})
                     .attr('cy', d => {return d.y})
                     .attr("fill", d => color(d.id))
                     .call(drag(simulation))
-                    .on("click", d => {
-                      var cat = [d.id];
-                      update_map(cat);
-                      node.style("opacity", function(o){
-                        var connected = 0;
-                        for (l in links){
-                          if((links[l].source == o && links[l].target == d) || (links[l].source == d && links[l].target == o) || d == o){
-                            connected = 1;
-                          }
-                        }
-                        if (connected == 1){
-                          return 1;
-                        }else{
-                          return 0.2;
-                        }
-                      });
-                      link.style("opacity", function(o){
-                        if (o.source == d || o.target == d){
-                          return 1
-                        }else{
-                          return 0.2;
-                        }
-                      })
-                    })
-                    .on("mouseout", d => {
-                      node.style("opacity", function(o){
-                        return 1;
-                      });
-                      link.style("opacity", function(o){
-                        return 1;
-                      })
-                    });
+                    .style("cursor", "pointer")
+                    .on("mouseover", highlight)
+                    .on("mouseout", nohightlight)
+                    .on('click', chooseMap);
 
         node.append("title")
             .text(d => d.id);
+
+        var text = g.selectAll(".text")
+            .data(nodes)
+            .enter().append("text")
+            .attr("x", d => d.x + node_r)
+            .attr("y", d => d.y + node_r/2)
+            .style("font-size", 'xx-small')
+            .style("font-family", "Arial")
+            .text(d => d.id)
+            .call(drag(simulation));
+
+        function chooseMap(d){
+            var type = [];
+            type.push(d.id);
+            for (l in links){
+                if(links[l].source.id == d.id){
+                    type.push(links[l].target.id)
+                }
+            }
+            update_map(type);
+        }
+        function highlight(k){
+            var neighbor = [];
+            neighbor.push(k.id);
+            for (l in links){
+                if(links[l].source.id == k.id){
+                    neighbor.push(links[l].target.id)
+                }
+            }
+
+            node.filter(d => !neighbor.includes(d.id))
+                .style('opacity', .1)
+            link.filter(d => (d.source.id != k.id))
+                .style('opacity', .1)
+            text.filter(d => neighbor.includes(d.id))
+                .style('font-size', 'medium')
+            text.filter(d => !neighbor.includes(d.id))
+                .style('opacity', .1)
+        }
+    
+        function nohightlight(d){
+                node.style("opacity", 1);
+                link.style("opacity", 1);
+                text.style('font-size', 'xx-small')
+                    .style('opacity', 1);
+
+        }
 
         simulation.on("tick", () => {
             link.attr("x1", d => {return Math.max(0, Math.min(d.source.x, width))})
@@ -93,6 +113,8 @@ function create_corr_graph(color){
                 .attr("y2", d => {return Math.max(0, Math.min(d.target.y, height))});
             node.attr("cx", d => {return Math.max(0, Math.min(d.x, width)) })
                 .attr("cy", d => {return Math.max(0, Math.min(d.y, height))});
+            text.attr("x", d => {return Math.max(0, Math.min(d.x + node_r, width))})
+                .attr("y", d => {return Math.max(0, Math.min(d.y + node_r/2, height))});
               });
     });
     function drag(simulation){
